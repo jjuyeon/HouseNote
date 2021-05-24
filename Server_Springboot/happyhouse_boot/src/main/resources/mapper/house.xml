@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.happyhouse.model.dao.HouseDao">
+	
+	<select id="getSido" resultType="SidoGugunDongCodeDto">
+		select left(sido_code,2) sido_code, sido_name
+		from sidocode
+		order by sido_code
+	</select>
+	
+	<select id="getGugunInSido" parameterType="map" resultType="SidoGugunDongCodeDto">
+		select left(gugun_code,5) gugun_code, gugun_name
+		from guguncode
+		where left(gugun_code,2) = #{sido}
+		order by gugun_code
+	</select>
+	
+	<select id="getDongInGugun" parameterType="map" resultType="SidoGugunDongCodeDto">
+		select distinct dong, code
+		from house
+		where code = #{gugun}
+		order by dong
+	</select>
+	
+	<select id="searchHouseDeal" parameterType="map" resultType="HouseDealDto">
+		select *
+		from housedeal
+		where houseIdx = #{houseIdx}
+		<if test="pg != 0">
+			limit #{start}, 10
+		</if>
+	</select>
+	
+	<select id="searchHouse" parameterType="map" resultType="HouseResponseDto">
+		select 
+		h.idx, 
+		h.aptname, 
+		h.buildYear, 
+		h.address, 
+		h.lat, 
+		h.lng, 
+		case when EXISTS(SELECT * FROM bookmark b WHERE b.houseIdx = h.idx AND b.userIdx = #{userIdx})
+		then 1
+		else 0
+		end as isBookMark
+		from house h
+		where h.dong = #{dong}
+		<if test="pg != 0">
+			limit #{start}, 10
+		</if>
+	</select>
+	
+	<insert id="addHouseDeal" parameterType="HouseDealDto">
+		insert into housedeal (houseIdx, dealAmount, dealYear, dealMonth, dealDay, area)
+		values (#{houseIdx}, #{dealAmount}, #{dealYear}, #{dealMonth}, #{dealDay}, #{area})
+	</insert>
+	
+	<insert id="addHouse" parameterType="HouseDto">
+		insert into house (idx, aptname, buildYear, dong, code, address, lat, lng)
+		values (#{idx}, #{aptname}, #{buildYear}, #{dong}, #{code}, #{address}, #{lat}, #{lng})
+		on duplicate key update aptname = #{aptname}, buildYear = #{buildYear}, dong = #{dong}, code = #{code}, address = #{address}, lat = #{lat}, lng = #{lng}
+	</insert>
+	
+	<select id="getHouseDealTotalCount" parameterType="map" resultType="int">
+		select count(idx)
+		from housedeal
+		where houseIdx = #{houseIdx}
+	</select>
+	
+	<select id="getHouseTotalCount" parameterType="map" resultType="int">
+		select count(idx)
+		from house
+		<if test="dong != null">
+			where dong = #{dong}
+		</if>
+	</select>
+
+</mapper>

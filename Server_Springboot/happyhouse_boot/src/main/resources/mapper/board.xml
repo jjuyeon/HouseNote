@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.happyhouse.model.dao.BoardDao">
+
+	<insert id="insertBoard" parameterType="map">
+		insert into board (userIdx, title, content)
+		values (#{userIdx}, #{title}, #{content})
+	</insert>
+	
+	<select id="listBoard" parameterType="map" resultType="BoardDto">
+		select idx, userIdx, title, content, date_format(createdAt, '%y.%m.%d') createdAt
+		from board
+		<if test="key != null">
+			where ${key} like concat('%', #{word}, '%')
+		</if>
+		order by createdAt desc
+		<if test="pg != 0">
+			limit #{start}, 10
+		</if>
+	</select>
+	
+	<select id="getTotalCount" parameterType="map" resultType="int">
+		select count(idx)
+		from board
+		<if test="key != null">
+			where ${key} like concat('%', #{word}, '%')
+		</if>
+	</select>
+	
+	<select id="selectBoard" parameterType="map" resultType="BoardDto">
+		select idx, userIdx, title, content, date_format(createdAt, '%y.%m.%d') createdAt
+		from board
+		where idx = #{boardIdx}
+	</select>
+	
+	<update id="modifyBoard" parameterType="map">
+		update board
+		set title = #{title}, content = #{content}
+		where idx = #{boardIdx} and userIdx = #{userIdx}
+	</update>
+	
+	<delete id="deleteBoard" parameterType="map">
+	delete from board
+	where idx = #{boardIdx} and userIdx = #{userIdx}
+	</delete>
+	
+</mapper>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.happyhouse.model.dao.NoteDao">
+
+	<delete id="deleteNote" parameterType="map">
+		delete from note
+		where
+		userIdx = #{userIdx} and houseIdx = #{houseIdx}
+	</delete>
+
+	<select id="getNote" parameterType="map" resultType="NoteDto">
+		select idx, houseIdx, userIdx, content, date_format(createdAt, '%y.%m.%d %T') createdAt, date_format(updatedAt, '%y.%m.%d %T') updatedAt
+		from note
+		where
+		userIdx = #{userIdx} and houseIdx like #{houseIdx}
+	</select>
+
+	<insert id="addNote" parameterType="NoteDto">
+		insert into note (houseIdx, userIdx, content)
+		values
+		(#{houseIdx}, #{userIdx}, '')
+	</insert>
+	
+	<update id="updateNote" parameterType="NoteDto">
+		update note
+		set content = #{content}
+		where idx = #{idx}
+	</update>
+	
+</mapper>

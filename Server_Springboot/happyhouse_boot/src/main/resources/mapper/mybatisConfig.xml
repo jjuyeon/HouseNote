@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias type="com.ssafy.happyhouse.model.UserDto"
+			alias="UserDto" />
+		<typeAlias type="com.ssafy.happyhouse.model.BookmarkDto"
+			alias="BookmarkDto" />
+		<typeAlias type="com.ssafy.happyhouse.model.HouseDto"
+			alias="HouseDto" />
+		<typeAlias type="com.ssafy.happyhouse.model.BookmarkResponseDto"
+			alias="BookmarkResponseDto" />
+		<typeAlias type="com.ssafy.happyhouse.model.HouseDealDto"
+			alias="HouseDealDto" />
+		<typeAlias type="com.ssafy.happyhouse.model.HouseResponseDto"
+			alias="HouseResponseDto" />
+		<typeAlias type="com.ssafy.happyhouse.model.HouseDealResponseDto"
+			alias="HouseDealResponseDto" />
+		<typeAlias
+			type="com.ssafy.happyhouse.model.SidoGugunDongCodeDto"
+			alias="SidoGugunDongCodeDto" />
+		<typeAlias type="com.ssafy.happyhouse.model.BoardDto"
+			alias="BoardDto" />
+		<typeAlias type="com.ssafy.happyhouse.model.NoteDto"
+			alias="NoteDto" />
+		<typeAlias type="com.ssafy.happyhouse.model.RoomDto"
+			alias="RoomDto" />
+	</typeAliases>
+
+	<mappers>
+		<mapper resource="mapper/user.xml" />
+		<mapper resource="mapper/bookmark.xml" />
+		<mapper resource="mapper/house.xml" />
+		<mapper resource="mapper/board.xml" />
+		<mapper resource="mapper/note.xml" />
+		<mapper resource="mapper/room.xml" />
+	</mappers>
+</configuration>

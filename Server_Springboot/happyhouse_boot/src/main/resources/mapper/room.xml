@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.happyhouse.model.dao.RoomDao">
+
+	<delete id="deleteRoom" parameterType="int">
+		delete from room
+		where idx = #{idx}
+	</delete>
+	
+	<select id="listRoom" parameterType="int" resultType="RoomDto">
+		select idx, noteIdx, status, name, item, score, date_format(createdAt, '%y.%m.%d %T') createdAt, date_format(updatedAt, '%y.%m.%d %T') updatedAt
+		from room
+		where noteIdx = #{noteIdx}
+	</select>
+	
+	<insert id="addRoom" parameterType="RoomDto">
+		insert into room (noteIdx, status, name, item, score)
+		values (#{noteIdx}, #{status}, #{name}, #{item}, #{score})
+	</insert>
+	
+	<update id="updateRoom" parameterType="RoomDto">
+		update room
+		set status = #{status}, name = #{name}, item = #{item}, score = #{score}
+		where idx = #{idx}
+	</update>
+	
+</mapper>

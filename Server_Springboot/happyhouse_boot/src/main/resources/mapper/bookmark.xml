@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.happyhouse.model.dao.BookmarkDao">
+
+	<delete id="deleteBookmark" parameterType="map">
+		delete from bookmark
+		where userIdx = #{userIdx} and houseIdx = #{houseIdx}
+	</delete>
+	
+	<select id="listBookmark" parameterType="map" resultType="BookmarkResponseDto">
+		select b.houseIdx, b.userIdx, h.aptname, h.buildYear, h.address, date_format(createdAt, '%y.%m.%d %T') createdAt, date_format(updatedAt, '%y.%m.%d %T') updatedAt
+		from bookmark b
+        inner join house h on h.idx = b.houseIdx
+		where userIdx = #{userIdx}
+	</select>
+	
+	<insert id="addBookmark" parameterType="BookmarkDto">
+		insert into bookmark (houseIdx, userIdx)
+		values (#{houseIdx}, #{userIdx})
+	</insert>
+	
+</mapper>

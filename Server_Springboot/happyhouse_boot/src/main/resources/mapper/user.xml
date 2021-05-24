@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.happyhouse.model.dao.UserDao">
+
+	<select id="login" parameterType="map" resultType="UserDto">
+		select username, userid, email, address, joindate
+		from user
+		where userid like #{userid} and userpwd like #{userpwd}
+	</select>
+	
+	<select id="getUser" parameterType="map" resultType="Userdto">
+		select idx, email, name, date_format(createdAt, '%y.%m.%d') createdAt, date_format(updatedAt, '%y.%m.%d') updatedAt
+		from user
+		where idx = #{userIdx}
+	</select>
+	
+	<insert id="join" parameterType="UserDto">
+		insert into user (idx, email, name)
+		values (#{idx}, #{email}, #{name})
+	</insert>
+	
+	<!-- <update id="modifyUser" parameterType="map">
+		update user
+		set userpwd = #{userpwd}, email = #{email}, address = #{address}
+		where userid like #{userid}
+	</update>
+	-->
+		
+</mapper>
