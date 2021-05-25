@@ -14,6 +14,9 @@ public class WebConfig implements WebMvcConfigurer {
 			"/api/sido",
 			"/api/gugun",
 			"/api/dong",
+			"/api/house",
+			"/api/house/*",
+			"/api/housedeal",
     };
 	
 	@Autowired

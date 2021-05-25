@@ -6,7 +6,7 @@ import java.util.Map;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.ssafy.happyhouse.model.HouseDealResponseDto;
+import com.ssafy.happyhouse.model.HouseDealApiResponseDto;
 
 /**
  *  AptDealHistory.xml 파일에서 아파트 거래 정보를 읽어 파싱하는 핸들러 클래스 
@@ -18,18 +18,18 @@ public class HouseSAXHandler extends DefaultHandler {
 	 */
 	private int no;
 	/**아파트 거래 정보를 담는다 */
-	private Map<Integer,HouseDealResponseDto> houses;
+	private Map<Integer,HouseDealApiResponseDto> houses;
 	/**파상힌 아파트 거래 정보*/
-	private HouseDealResponseDto house;
+	private HouseDealApiResponseDto house;
 	/**태그 바디 정보를 임시로 저장*/
 	private String temp;
 	public HouseSAXHandler(){
-		houses = new HashMap<Integer,HouseDealResponseDto>();
+		houses = new HashMap<Integer,HouseDealApiResponseDto>();
 	}
 	public void startElement(String uri, String localName
 			                           , String qName, Attributes att ){
 		if(qName.equals("item")){
-			house = new HouseDealResponseDto();
+			house = new HouseDealApiResponseDto();
 		}
 	}
 	public void endElement(String uri, String localName, String qName){
@@ -62,12 +62,7 @@ public class HouseSAXHandler extends DefaultHandler {
 	public void characters(char[]ch, int start, int length){
 		temp = new String(ch, start, length);
 	}
-	public Map<Integer,HouseDealResponseDto> getHouseDealResponse() {
+	public Map<Integer,HouseDealApiResponseDto> getHouseDealResponse() {
 		return houses;
 	}
 }
-
-
-
-
-

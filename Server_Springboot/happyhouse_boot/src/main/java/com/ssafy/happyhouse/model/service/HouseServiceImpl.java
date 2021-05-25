@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.happyhouse.model.HouseDealDto;
+import com.ssafy.happyhouse.model.HouseDealResponseDto;
 import com.ssafy.happyhouse.model.HouseDto;
 import com.ssafy.happyhouse.model.HouseResponseDto;
 import com.ssafy.happyhouse.model.SidoGugunDongCodeDto;
-import com.ssafy.happyhouse.model.dao.BoardDao;
 import com.ssafy.happyhouse.model.dao.HouseDao;
 
 @Service
@@ -44,9 +44,14 @@ private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.cla
 	public List<HouseResponseDto> searchHouse(Map<String, Object> map) throws Exception {
 		return sqlSession.getMapper(HouseDao.class).searchHouse(map);
 	}
+	
+	@Override
+	public HouseResponseDto searchHouseDetail(Map<String, Object> map) throws Exception {
+		return sqlSession.getMapper(HouseDao.class).searchHouseDetail(map);
+	}
 
 	@Override
-	public List<HouseDealDto> searchHouseDeal(Map<String, Object> map) throws Exception {
+	public List<HouseDealResponseDto> searchHouseDeal(Map<String, Object> map) throws Exception {
 		return sqlSession.getMapper(HouseDao.class).searchHouseDeal(map);
 	}
 

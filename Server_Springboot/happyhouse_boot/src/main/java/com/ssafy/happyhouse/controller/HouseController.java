@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.ssafy.happyhouse.jwt.JwtService;
 import com.ssafy.happyhouse.model.HouseDealDto;
 import com.ssafy.happyhouse.model.HouseDealResponseDto;
+import com.ssafy.happyhouse.model.HouseDealApiResponseDto;
 import com.ssafy.happyhouse.model.HouseDto;
 import com.ssafy.happyhouse.model.HouseResponseDto;
 import com.ssafy.happyhouse.model.SidoGugunDongCodeDto;
@@ -48,14 +49,18 @@ public class HouseController {
 
 	@GetMapping("/house")
 	@ApiOperation(value="집 정보 조회 서비스")
-	public ResponseEntity<Map<String, Object>> searchHouse(@RequestParam Map<String, Object> req, @RequestHeader(value="Authorization") String jwt) throws Exception {
+	public ResponseEntity<Map<String, Object>> searchHouse(@RequestParam Map<String, Object> req, @RequestHeader(value="Authorization", required = false) String jwt) throws Exception {
 		ResponseEntity<Map<String, Object>> resEntity = null;
 		try {
 			Map<String, Object> map = new HashMap<String, Object>();
-			UserDto user = jwtService.getUser(jwt);
-			req.put("userIdx", user.getIdx());
+			if (!jwt.equals("null")) {
+				UserDto user = jwtService.getUser(jwt);
+				req.put("userIdx", user.getIdx());
+			} else {
+				req.put("userIdx", null);
+			}
 			int totalCount = houseService.getHouseTotalCount(req);
-			req.put("start", ((Integer.parseInt(req.get("pg").toString())-1) * 10));
+			req.put("start", ((Integer.parseInt(req.get("pg").toString())-1) * 5));
 			if (totalCount != 0) {
 				PageNavigation pageNavigation = new PageNavigation(Integer.parseInt(req.get("pg").toString()),totalCount);
 				map.put("pageNavigation", pageNavigation);
@@ -77,19 +82,53 @@ public class HouseController {
 	}
 	
 	@GetMapping("/house/{houseIdx}")
-	@ApiOperation(value="집 거래 정보 조회 서비스")
-	public ResponseEntity<Map<String, Object>> searchHouseDeal(@RequestParam Map<String, Object> req, @PathVariable("houseIdx") String houseIdx) throws Exception {
+	@ApiOperation(value="집 정보 상세 조회 서비스")
+	public ResponseEntity<Map<String, Object>> searchHouseDeal(@RequestParam Map<String, Object> req, @PathVariable("houseIdx") String houseIdx, @RequestHeader(value="Authorization", required = false) String jwt) throws Exception {
 		ResponseEntity<Map<String, Object>> resEntity = null;
 		req.put("houseIdx", houseIdx);
 		try {
 			Map<String, Object> map = new HashMap<String, Object>();
+			if (!jwt.equals("null")) {
+				UserDto user = jwtService.getUser(jwt);
+				req.put("userIdx", user.getIdx());
+			} else {
+				req.put("userIdx", null);
+			}
+			HouseResponseDto houseDto = houseService.searchHouseDetail(req);
+			map.put("result", houseDto);
+			map.put("isSuccess", true);
+	        map.put("code", 200);
+	        map.put("message", "집 정보 상세 조회 성공");
+			resEntity = new ResponseEntity<Map<String,Object>>(map, HttpStatus.OK);
+		} catch(RuntimeException e) {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("isSuccess", false);
+	        map.put("code", 500);
+	        map.put("message", "집 정보 상세 조회 실패");
+			resEntity = new ResponseEntity<Map<String,Object>>(map, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return resEntity;
+	}
+	
+	@GetMapping("/housedeal")
+	@ApiOperation(value="집 거래 정보 조회 서비스")
+	public ResponseEntity<Map<String, Object>> searchHouseDeal(@RequestParam Map<String, Object> req, @RequestHeader(value="Authorization", required = false) String jwt) throws Exception {
+		ResponseEntity<Map<String, Object>> resEntity = null;
+		try {
+			Map<String, Object> map = new HashMap<String, Object>();
+			if (!jwt.equals("null")) {
+				UserDto user = jwtService.getUser(jwt);
+				req.put("userIdx", user.getIdx());
+			} else {
+				req.put("userIdx", null);
+			}
 			int totalCount = houseService.getHouseDealTotalCount(req);
-			req.put("start", ((Integer.parseInt(req.get("pg").toString())-1) * 10));
+			req.put("start", ((Integer.parseInt(req.get("pg").toString())-1) * 5));
 			if (totalCount != 0) {
 				PageNavigation pageNavigation = new PageNavigation(Integer.parseInt(req.get("pg").toString()),totalCount);
 				map.put("pageNavigation", pageNavigation);
 			}
-			List<HouseDealDto> list = houseService.searchHouseDeal(req);
+			List<HouseDealResponseDto> list = houseService.searchHouseDeal(req);
 			map.put("result", list);
 			map.put("isSuccess", true);
 	        map.put("code", 200);
@@ -118,8 +157,8 @@ public class HouseController {
 				tmp.put("sido", "50");
 				List<SidoGugunDongCodeDto> gugun = houseService.getGugunInSido(tmp);
 				for (int j = 0; j < gugun.size(); j++) {
-					String url = "http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev?serviceKey=#{your_service_Key}&numOfRows=50&LAWD_CD="+gugun.get(j).getGugun_code()+"&DEAL_YMD=201512";
-			        Map<Integer,HouseDealResponseDto> houseDealResponse;
+					String url = "http://openapi.molit.go.kr/OpenAPI_ToolInstallPackage/service/rest/RTMSOBJSvc/getRTMSDataSvcAptTradeDev?serviceKey=#{your_API_key}&numOfRows=50&LAWD_CD="+gugun.get(j).getGugun_code()+"&DEAL_YMD=201512";
+			        Map<Integer,HouseDealApiResponseDto> houseDealResponse;
 			        SAXParserFactory factory = SAXParserFactory.newInstance();
 			        SAXParser parser = factory.newSAXParser();
 			        HouseSAXHandler houseHandler = new HouseSAXHandler();
@@ -129,7 +168,7 @@ public class HouseController {
 			        for (Integer key : houseDealResponse.keySet()) {
 			        	HouseDto house = new HouseDto();
 			        	HouseDealDto houseDeal = new HouseDealDto();
-			        	HouseDealResponseDto response = houseDealResponse.get(key);
+			        	HouseDealApiResponseDto response = houseDealResponse.get(key);
 			        	house.setAptname(response.getAptname());
 			        	house.setIdx(response.getHouseIdx());
 			        	house.setBuildYear(response.getBuildYear());

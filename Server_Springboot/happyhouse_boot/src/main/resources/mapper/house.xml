@@ -18,18 +18,24 @@
 	</select>
 	
 	<select id="getDongInGugun" parameterType="map" resultType="SidoGugunDongCodeDto">
-		select distinct dong, code
+		select distinct dong, code as dongcode
 		from house
 		where code = #{gugun}
 		order by dong
 	</select>
 	
-	<select id="searchHouseDeal" parameterType="map" resultType="HouseDealDto">
-		select *
-		from housedeal
-		where houseIdx = #{houseIdx}
+	<select id="searchHouseDeal" parameterType="map" resultType="HouseDealResponseDto">
+		select
+		d.idx,
+		d.dealAmount,
+		d.area,
+		d.dealYear,
+		d.dealMonth,
+		d.dealDay
+		from housedeal d
+		where d.houseIdx = #{houseIdx}
 		<if test="pg != 0">
-			limit #{start}, 10
+			limit #{start}, 5
 		</if>
 	</select>
 	
@@ -46,10 +52,26 @@
 		else 0
 		end as isBookMark
 		from house h
-		where h.dong = #{dong}
+		where h.dong = #{dong} and h.code = #{dongcode}
 		<if test="pg != 0">
-			limit #{start}, 10
+			limit #{start}, 5
 		</if>
+	</select>
+	
+	<select id="searchHouseDetail" parameterType="map" resultType="HouseResponseDto">
+		select 
+		h.idx, 
+		h.aptname, 
+		h.buildYear, 
+		h.address, 
+		h.lat, 
+		h.lng, 
+		case when EXISTS(SELECT * FROM bookmark b WHERE b.houseIdx = h.idx AND b.userIdx = #{userIdx})
+		then 1
+		else 0
+		end as isBookMark
+		from house h
+		where h.idx = #{houseIdx}
 	</select>
 	
 	<insert id="addHouseDeal" parameterType="HouseDealDto">
@@ -73,7 +95,7 @@
 		select count(idx)
 		from house
 		<if test="dong != null">
-			where dong = #{dong}
+			where dong = #{dong} and code = #{dongcode}
 		</if>
 	</select>
 

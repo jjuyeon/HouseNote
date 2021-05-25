@@ -80,7 +80,7 @@ public class KakaoAPIService {
 	public JsonNode getKakaoAddress(String address) {
 		final HttpClient client = HttpClientBuilder.create().build();
 		final HttpGet get = new HttpGet(addressRequestURL+"?query="+address);
-		get.addHeader("Authorization", "KakaoAK #{your_kakao_rest_api_key}");
+		get.addHeader("Authorization", "KakaoAK #{your_kakao_rest_API_key}");
 
 		JsonNode returnNode = null;
 
